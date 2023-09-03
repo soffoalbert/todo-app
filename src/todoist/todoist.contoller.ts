@@ -9,20 +9,17 @@ export class TodoistController {
 
   @Get('todoist')
   @UseGuards(AuthGuard('todoist'))
-  /* istanbul ignore next */
   async loginWithTodoist(@Res() res: Response) {
     res.status(HttpStatus.OK)
   }
 
   @Get('todoist/callback')
   @UseGuards(AuthGuard('todoist'))
-  /* istanbul ignore next */
   async todoistCallback(@Req() req: Request, @Res() res: Response) {
     res.redirect('/todo/success');
   }
 
   @Get('success')
-  /* istanbul ignore next */
   async get() {
     return "success"
   }
