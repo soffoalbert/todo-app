@@ -4,7 +4,7 @@ I assumed the Task model should not have a description field or any other fields
 
 ## 3rd party integration setup - Todoist
 
-This app uses Todist as the 3rd party app of choice for syncing todos. [click here to create an account and to folow the setup]:(https://todoist.com/)
+This app uses Todist as the 3rd party app of choice for syncing todos. [click here to create an account and to folow the setup](https://todoist.com/)
 
 ## Installation
 
