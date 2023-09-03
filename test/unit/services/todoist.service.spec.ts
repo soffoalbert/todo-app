@@ -94,10 +94,8 @@ describe('TodoistService', () => {
         isCompleted: true,
       };
 
-      // Mock Todoist API responses
       (TodoistApi.prototype.getTask as jest.Mock).mockResolvedValue(mockTask);
 
-      // Mock TaskService methods
       mockTaskService.findOneByTodistId.mockResolvedValue(mockTask);
       mockTaskService.update.mockResolvedValue(mockTask);
 
@@ -120,10 +118,8 @@ describe('TodoistService', () => {
         isCompleted: true,
       };
 
-      // Mock Todoist API responses
       (TodoistApi.prototype.getTask as jest.Mock).mockResolvedValue(mockTask);
 
-      // Mock TaskService methods
       mockTaskService.findOneByTodistId.mockResolvedValue(null);
       mockTaskService.storeFromTodoist.mockResolvedValue(mockTask);
 
@@ -144,7 +140,6 @@ describe('TodoistService', () => {
         event_name: 'item:updated',
       };
 
-      // Mock Todoist API response
       mockTodoistAPIClient.getTask.mockRejectedValue(new Error('API Error'));
 
       try {
@@ -160,7 +155,6 @@ describe('TodoistService', () => {
         event_name: 'item:updated',
       };
 
-      // Mock Todoist API response
       mockTodoistAPIClient.getTask.mockRejectedValue(new Error('API Error'));
 
       try {
@@ -176,7 +170,6 @@ describe('TodoistService', () => {
         event_name: 'item:added',
       };
 
-      // Mock Todoist API response
       mockTodoistAPIClient.getTask.mockRejectedValue(new Error('API Error'));
 
       try {
@@ -200,7 +193,6 @@ describe('TodoistService', () => {
 
       const todoistApiResponse = { content: 'New Task' };
 
-      // Mock Todoist API response
       (TodoistApi.prototype.addTask as jest.Mock).mockResolvedValue(Promise.resolve(todoistApiResponse));
 
       const result = await todoistService.create(newTaskInput);
@@ -218,7 +210,6 @@ describe('TodoistService', () => {
         taskList: null
       };
 
-      // Mock Todoist API error
       mockTodoistAPIClient.addTask.mockRejectedValue(new Error('API Error'));
 
       try {
@@ -241,7 +232,6 @@ describe('TodoistService', () => {
 
         const todoistApiResponse = { content: 'Updated Task' };
 
-        // Mock Todoist API response
         (TodoistApi.prototype.updateTask as jest.Mock).mockResolvedValue(Promise.resolve(todoistApiResponse));
 
         const result = await todoistService.update(taskToUpdate);
@@ -259,7 +249,6 @@ describe('TodoistService', () => {
           taskList: null
         };
 
-        // Mock Todoist API error
         mockTodoistAPIClient.updateTask.mockRejectedValue(new Error('API Error'));
 
         try {
@@ -272,7 +261,6 @@ describe('TodoistService', () => {
 
     describe('close', () => {
       it('should close a task in Todoist', async () => {
-        // Mock Todoist API response
         (TodoistApi.prototype.closeTask as jest.Mock).mockResolvedValue('12345');
 
         const result = await todoistService.close('12345');
@@ -281,7 +269,6 @@ describe('TodoistService', () => {
       });
 
       it('should handle errors during task closure', async () => {
-        // Mock Todoist API error
         mockTodoistAPIClient.closeTask.mockRejectedValue(new Error('API Error'));
 
         try {

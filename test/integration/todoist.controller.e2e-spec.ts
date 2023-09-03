@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TodoistService } from '../../src/todoist/todoist.service';
 import { TaskService } from '../../src/task/task.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { TodoistApi } from '@doist/todoist-api-typescript';
 import { AppModule } from '../../src/app.module';
@@ -77,13 +77,11 @@ describe('TodoistService (E2E)', () => {
   });
 
   beforeEach(() => {
-    // Clear mock function calls before each test
     jest.clearAllMocks();
   });
 
   describe('sync', () => {
     it('should sync a task when item:updated event occurs', async () => {
-      // Mock the TodoistApi.getTask method
       const mockTask = {
         id: '1',
         content: 'Updated Task Content',
@@ -91,10 +89,8 @@ describe('TodoistService (E2E)', () => {
       };
       (TodoistApi.prototype.getTask as jest.Mock).mockResolvedValue(mockTask);
 
-      // Mock the TaskService.findOneByTodistId method
       mockTaskService.findOneByTodistId.mockResolvedValue(mockTask);
 
-      // Mock the TaskService.update method
       mockTaskService.update.mockResolvedValue(mockTask);
 
       const taskBeUpdatedInput = {
@@ -103,18 +99,16 @@ describe('TodoistService (E2E)', () => {
       };
 
       const response = await request(app.getHttpServer())
-        .post('/todo/sync') // Adjust the endpoint as needed
+        .post('/todo/sync')
         .send(taskBeUpdatedInput)
-        .expect(200); // Change the expected status code as needed
+        .expect(200);
 
-      // Assertions here
       expect(mockTaskService.findOneByTodistId).toHaveBeenCalledWith('1');
       expect(mockTaskService.update).toHaveBeenCalledWith(mockTask);
       expect(response.body).toEqual(mockTask);
     });
 
     it('should create a task when item:added event occurs and task is not found', async () => {
-      // Mock the TodoistApi.getTask method for item:added event
       const mockTask = {
         id: '2',
         content: 'New Task Content',
@@ -122,10 +116,8 @@ describe('TodoistService (E2E)', () => {
       };
       (TodoistApi.prototype.getTask as jest.Mock).mockResolvedValue(mockTask);
 
-      // Mock the TaskService.findOneByTodistId method to return null (task not found)
       mockTaskService.findOneByTodistId.mockResolvedValue(null);
 
-      // Mock the TaskService.storeFromTodoist method
       const createdTask = {
         id: '2',
         name: 'New Task Content',
@@ -140,11 +132,10 @@ describe('TodoistService (E2E)', () => {
       };
 
       const response = await request(app.getHttpServer())
-        .post('/todo/sync') // Adjust the endpoint as needed
+        .post('/todo/sync')
         .send(taskBeAddedInput)
-        .expect(200); // Change the expected status code as needed
+        .expect(200);
 
-      // Assertions here
       expect(mockTaskService.findOneByTodistId).toHaveBeenCalledWith('2');
       expect(mockTaskService.storeFromTodoist).toHaveBeenCalledWith({
         name: 'New Task Content',
@@ -155,7 +146,6 @@ describe('TodoistService (E2E)', () => {
     });
 
     it('should handle errors and return 500 status on sync failure', async () => {
-      // Mock the TodoistApi.getTask method to simulate a failure
       (TodoistApi.prototype.getTask as jest.Mock).mockRejectedValue(new Error('Todoist API error'));
 
       const taskBeUpdatedInput = {
@@ -164,16 +154,14 @@ describe('TodoistService (E2E)', () => {
       };
 
       const response = await request(app.getHttpServer())
-        .post('/todo/sync') // Adjust the endpoint as needed
+        .post('/todo/sync')
         .send(taskBeUpdatedInput)
-        .expect(500); // Change the expected status code as needed
+        .expect(500);
 
-      // Assertions here
       expect(response.body.message).toBe('Internal server error');
     });
 
     it('should handle item:completed event and update the corresponding task', async () => {
-      // Mock the TodoistApi.getTask method
       const mockTask = {
         id: '1',
         content: 'Completed Task',
@@ -181,10 +169,8 @@ describe('TodoistService (E2E)', () => {
       };
       (TodoistApi.prototype.getTask as jest.Mock).mockResolvedValue(mockTask);
 
-      // Mock the TaskService.findOneByTodistId method
       mockTaskService.findOneByTodistId.mockResolvedValue(mockTask);
 
-      // Mock the TaskService.update method
       mockTaskService.update.mockResolvedValue(mockTask);
 
       const taskBeCompletedInput = {
@@ -193,14 +179,26 @@ describe('TodoistService (E2E)', () => {
       };
 
       const response = await request(app.getHttpServer())
-        .post('/todo/sync') // Adjust the endpoint as needed
+        .post('/todo/sync')
         .send(taskBeCompletedInput)
-        .expect(200); // Change the expected status code as needed
+        .expect(200);
 
-      // Assertions here
       expect(mockTaskService.findOneByTodistId).toHaveBeenCalledWith('1');
       expect(mockTaskService.update).toHaveBeenCalledWith(mockTask);
       expect(response.body).toEqual(mockTask);
     });
   });
+  it('/todoist (GET) should return a response with authentication', async () => {
+    const response = await request(app.getHttpServer()).get('/todo/todoist');
+ 
+    expect(response.status).toBe(HttpStatus.FOUND);
+  });
+
+  it('/todoist/callback (GET) should handle Todoist callback and redirect', async () => {
+    const response = await request(app.getHttpServer()).get('/todo/todoist/callback');
+
+    expect(response.status).toBe(HttpStatus.FOUND);
+    expect(response.header.location).toBe('https://todoist.com/oauth/authorize?scope=data%3Aread_write&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Ftodo%2Ftodoist%2Fcallback&client_id=15a7a85211d84e80932956f538d23ce2');
+  });
+
 });
