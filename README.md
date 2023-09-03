@@ -15,13 +15,13 @@ $ yarn install
 ## Running the app
 
 ```bash
-# development - NOTE: update the .env file before running this comand 
+# development - NOTE: update the .env file before running this command and also make sure you setup localtunnel or any alternative to have the syncing working
 $ yarn run start
 
-# watch mode - NOTE: update the .env file before running this comand 
+# watch mode - NOTE: update the .env file before running this command and also make sure you setup localtunnel or any alternative to have the syncing working
 $ yarn run start:dev
 
-# production mode - NOTE: update the .env file before running this comand 
+# production mode - NOTE: update the .env file before running this command and also make sure you setup localtunnel or any alternative to have the syncing working
 $ yarn run start:prod
 ```
 
