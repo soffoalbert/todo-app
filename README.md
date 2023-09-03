@@ -15,13 +15,13 @@ $ yarn install
 ## Running the app
 
 ```bash
-# development
+# development - NOTE: update the .env file before running this comand 
 $ yarn run start
 
-# watch mode
+# watch mode - NOTE: update the .env file before running this comand 
 $ yarn run start:dev
 
-# production mode
+# production mode - NOTE: update the .env file before running this comand 
 $ yarn run start:prod
 ```
 
